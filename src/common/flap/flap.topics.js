@@ -2,7 +2,7 @@ angular.module( 'flap.topics', [
         'flap.objectUtils',
         'flap.stringUtils'
     ])
-    .constant('apiPath', "http://api.unibuddy.com.au/api/v2/")
+    .constant('apiPath', "http://localhost:3000/api/v2/")
 
     .factory('institutionFactory', function(apiPath, $http, camelCaseService) {
         var institutionFactory = {};
