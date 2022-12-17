@@ -170,8 +170,26 @@ table.topics {
     font-size: 0.8em;
     opacity: 0.7;
   }
+
+  .manual-entry + .manual-entry {
+    margin-top: 10px;
+  }
 }
 
+.week-display-container {
+  display:flex;
+  flex-direction: row;
+  font-size: 0.85em;
+}
+.week-display-container .week-display {
+  margin: auto;
+}
+.week-display.active {
+  filter: brightness(1.1);
+}
+.week-display.inactive {
+  filter: opacity(0.8);
+}
 
 
 
@@ -197,7 +215,7 @@ table.topics {
 
 
 @hours-in-day: 13;
-@hour-height: 3em;
+@hour-height: 6em;
 @half-hour-height: @hour-height/2;
 
 @timetable-column-height: @hours-in-day * 2 * @half-hour-height;

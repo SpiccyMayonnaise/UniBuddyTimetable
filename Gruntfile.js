@@ -282,7 +282,8 @@ module.exports = function (grunt) {
                 noarg: true,
                 sub: true,
                 boss: true,
-                eqnull: true
+                eqnull: true,
+                esversion: 6
             },
             globals: {}
         },
@@ -320,19 +321,19 @@ module.exports = function (grunt) {
         /**
          * The Karma configurations.
          */
-        karma: {
-            options: {
-                configFile: '<%= build_dir %>/karma-unit.js'
-            },
-            unit: {
-                runnerPort: 9101,
-                background: true,
-                port: 9877
-            },
-            continuous: {
-                singleRun: true
-            }
-        },
+        // karma: {
+        //     options: {
+        //         configFile: '<%= build_dir %>/karma-unit.js'
+        //     },
+        //     unit: {
+        //         runnerPort: 9101,
+        //         background: true,
+        //         port: 9877
+        //     },
+        //     continuous: {
+        //         singleRun: true
+        //     }
+        // },
 
         /**
          * The `index` task compiles the `index.html` file as a Grunt template. CSS
@@ -377,17 +378,17 @@ module.exports = function (grunt) {
          * This task compiles the karma template so that changes to its file array
          * don't have to be managed manually.
          */
-        karmaconfig: {
-            unit: {
-                dir: '<%= build_dir %>',
-                src: [
-                    '<%= vendor_files.js %>',
-                    '<%= html2js.app.dest %>',
-                    '<%= html2js.common.dest %>',
-                    '<%= test_files.js %>'
-                ]
-            }
-        },
+        // karmaconfig: {
+        //     unit: {
+        //         dir: '<%= build_dir %>',
+        //         src: [
+        //             '<%= vendor_files.js %>',
+        //             '<%= html2js.app.dest %>',
+        //             '<%= html2js.common.dest %>',
+        //             '<%= test_files.js %>'
+        //         ]
+        //     }
+        // },
 
         /**
          * And for rapid development, we have a watch set up that checks to see if
@@ -430,7 +431,7 @@ module.exports = function (grunt) {
                 files: [
                     '<%= app_files.js %>'
                 ],
-                tasks: [ 'jshint:src', 'karma:unit:run', 'copy:build_appjs' ]
+                tasks: [ 'copy:build_appjs' ]
             },
 
             /**
@@ -497,7 +498,7 @@ module.exports = function (grunt) {
      * before watching for changes.
      */
     grunt.renameTask('watch', 'delta');
-    grunt.registerTask('watch', [ 'build', 'connect:server', 'karma:unit', 'delta' ]);
+    grunt.registerTask('watch', [ 'build', 'connect:server', 'delta' ]);
 
     /**
      * The default task is to build and compile.
@@ -508,10 +509,10 @@ module.exports = function (grunt) {
      * The `build` task gets your app ready to run for development and testing.
      */
     grunt.registerTask('build', [
-        'clean', 'html2js', 'jshint', 'recess:build',
+        'clean', 'html2js', 'recess:build',
         'concat:build_css', 'copy:build_app_assets', 'copy:build_vendor_assets',
         'copy:build_vendor_fonts', 'copy:build_appjs', 'copy:build_vendorjs',
-        'index:build', 'karmaconfig', 'karma:continuous'
+        'index:build'
     ]);
 
     /**

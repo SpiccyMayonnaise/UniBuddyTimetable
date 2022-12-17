@@ -10,13 +10,28 @@ angular.module( 'flap.topics', [
         institutionFactory.getInstitutionsAsync = function (callback) {
             var url = apiPath + 'uni.json';
 
-            $http.get(url).success(function(response) {
-                institutions = camelCaseService.camelCaseObject(response.data);
+            $http.get(url).then(function(response) {
+                institutions = camelCaseService.camelCaseObject(response.data.data);
                 callback(institutions);
             });
         };
 
         return institutionFactory;
+    })
+
+    .factory('termDatesFactory', function(apiPath, $http, camelCaseService) {
+        let termDatesFactory = {};
+
+        termDatesFactory.getTermDatesAsync = function(query, callback) {
+            const url = apiPath + 'uni/' + query.instCode + '/dates/' + query.year + '.json';
+
+            $http.get(url).then(response => {
+                termDates = camelCaseService.camelCaseObject(response.data.data);
+                callback(termDates);
+            });
+        };
+
+        return termDatesFactory;
     })
 
     .factory('topicFactory', function (apiPath, $http, camelCaseService, topicService) {
@@ -74,9 +89,8 @@ angular.module( 'flap.topics', [
                 url += "&topic_number=" + query.topicNumber;
             }
 
-            $http.get(url).success(function (response, status, headers, config) {
-                topics = response.data;
-
+            $http.get(url).then(function (response, status, headers, config) {
+                topics = response.data.data;
 
                 camelCaseService.camelCaseObject(topics);
 
@@ -86,6 +100,16 @@ angular.module( 'flap.topics', [
                     angular.extend(topic, baseTopic);
                 });
 
+                topics.forEach(topic => {
+                    topic.classes.forEach(classType => {
+                        classType.classGroups.forEach(classGroup => {
+                            classGroup.activities.forEach(activity => {
+                                activity.intervals = [{firstDay: activity.firstDay, lastDay: activity.lastDay}];
+                            });
+                        });
+                    });
+                });
+
                 callback(topics, status, headers, config);
             });
         };
@@ -93,10 +117,18 @@ angular.module( 'flap.topics', [
         topicFactory.getTopicAsync = function (topicId, callback) {
             var url = apiPath + 'topics/' + topicId + '.json';
 
-            $http.get(url).success(function (response, status, headers, config) {
-                topic = response.data;
+            $http.get(url).then(function (response, status, headers, config) {
+                topic = response.data.data;
 
                 camelCaseService.camelCaseObject(topic);
+
+                topic.classes.forEach(classType => {
+                    classType.classGroups.forEach(classGroup => {
+                        classGroup.activities.forEach(activity => {
+                            activity.intervals = [{firstDay: activity.firstDay, lastDay: activity.lastDay}];
+                        });
+                    });
+                });
 
                 callback(topic, status, headers, config);
             });
@@ -159,6 +191,14 @@ angular.module( 'flap.topics', [
 
                     });
                 }
+
+                topic.classes.forEach(classType => {
+                    classType.classGroups.forEach(classGroup => {
+                        classGroup.activities.forEach(activity => {
+                            activity.intervals = [{firstDay: activity.firstDay, lastDay: activity.lastDay}];
+                        });
+                    });
+                });
 
                 callback(topic, status, headers, config);
             });

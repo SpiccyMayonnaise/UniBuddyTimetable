@@ -1,10 +1,11 @@
 if (document.addEventListener !== undefined) {
     angular.module('unibuddyTimetable', [
             'templates-app',
-            'templates-common',
+            // 'templates-common',
             'unibuddyTimetable.timetable',
-            'ui.state',
-            'ui.route'
+            // 'ui.state',
+            // 'ui.route'
+            'ui.router'
         ])
 
         .config(function myAppConfig($stateProvider, $urlRouterProvider, $locationProvider) {

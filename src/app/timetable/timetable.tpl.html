@@ -1,112 +1,119 @@
 <div ng-controller="TopicController">
     <div class="container">
-    <form class="form">
-        <h3>Where and when are we planning for?</h3>
+        <form class="form">
+            <h3>Where and when are we planning for?</h3>
 
-        <fieldset class="timeAndPlace">
-            <div class="row">
-                <div class="col-md-3">
-                    <h4>University</h4>
-                    <ul>
-                        <li ng-repeat="institution in institutions">
-                            <label>
-                                <input type="radio"
-                                       name="activeInstitution"
-                                       ng-model="$parent.activeInstitution"
-                                       ng-value="institution"
-                                       ng-change="updateAvailableYears()"/>
-                                {{ institution.name }}
-                            </label>
-                        </li>
-                    </ul>
+            <fieldset class="timeAndPlace">
+                <div class="row">
+                    <div class="col-md-3">
+                        <h4>University</h4>
+                        <ul>
+                            <li ng-repeat="institution in institutions">
+                                <label>
+                                    <input type="radio"
+                                           name="activeInstitution"
+                                           ng-model="$parent.activeInstitution"
+                                           ng-value="institution"
+                                           ng-change="updateAvailableYears()"/>
+                                    {{ institution.name }}
+                                </label>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="col-md-3">
+                        <h4>Year</h4>
+                        <ul class="years">
+                            <li ng-repeat="year in years">
+                                <label>
+                                    <input type="radio"
+                                           name="activeYear"
+                                           ng-model="$parent.activeYear"
+                                           ng-value="year"
+                                           ng-change="updateAvailableSemesters()"/>
+                                    {{ year }}
+
+                                </label>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="col-md-6">
+                        <h4>Semester</h4>
+                        <ul class="semesters">
+                            <li ng-repeat="semester in semesters">
+                                <label>
+                                    <input type="checkbox"
+                                           name="activeSemester"
+                                           ng-model="semester.selected"
+                                           ng-change="updateAvailableTopics()"/>
+                                    {{ semester.name }} ({{ semester.code }})
+
+                                </label>
+                            </li>
+                        </ul>
+                    </div>
                 </div>
-
-                <div class="col-md-3">
-                    <h4>Year</h4>
-                    <ul class="years">
-                        <li ng-repeat="year in years">
-                            <label>
-                                <input type="radio"
-                                       name="activeYear"
-                                       ng-model="$parent.activeYear"
-                                       ng-value="year"
-                                       ng-change="updateAvailableSemesters()"/>
-                                {{ year }}
-
-                            </label>
-                        </li>
-                    </ul>
-                </div>
-
-                <div class="col-md-6">
-                    <h4>Semester</h4>
-                    <ul class="semesters">
-                        <li ng-repeat="semester in semesters">
-                            <label>
-                                <input type="checkbox"
-                                       name="activeSemester"
-                                       ng-model="semester.selected"
-                                       ng-change="updateAvailableTopics()"/>
-                                {{ semester.name }} ({{ semester.code }})
-
-                            </label>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </fieldset>
+            </fieldset>
         </form>
     </div>
 
     <div class="container topics">
-    <form>
-        <h3>Which topics are you planning to do?</h3>
-        <table class="table topics">
-            <tbody>
-            <tr ng-repeat="topic in chosenTopics">
-                <td width="*">
-                    {{ topic.code }} {{ topic.name }} <span class="subtle">{{topic.institution.nickname }} {{ topic.location }} {{ topic.year }} {{ topic.semester }} </span>
-                    <span class="topic-subscript" ng-show="topic.subscript">{{ topic.subscript }}</span>
-                </td>
-                <td class="action">
-                    <button type="button" class="btn btn-danger btn-sm" ng-click="removeTopic(topic)">Remove</button>
-                </td>
-            </tr>
-            </tbody>
-            <tfoot ng-show="chosenTopics.length < 8">
-            <tr>
-                <td width="*">
-                    <input class="form-control" ng-model="topicSearch" placeholder="Search" />
-                </td>
+        <form>
+            <h3>Which topics are you planning to do?</h3>
+            <table class="table topics">
+                <tbody>
+                <tr ng-repeat="topic in chosenTopics">
+                    <td width="*">
+                        {{ topic.code }} {{ topic.name }} <span class="subtle">{{topic.institution.nickname
+                        }} {{ topic.location }} {{ topic.year }} {{ topic.semester }} </span>
+                        <span class="topic-subscript" ng-show="topic.subscript">{{ topic.subscript }}</span>
+                    </td>
+                    <td class="action">
+                        <button type="button" class="btn btn-danger btn-sm" ng-click="removeTopic(topic)">Remove
+                        </button>
+                    </td>
+                </tr>
+                </tbody>
+                <tfoot ng-show="chosenTopics.length < 8">
+                <tr>
+                    <td width="*">
+                        <input class="form-control" ng-model="topicSearch" placeholder="Search"/>
+                    </td>
 
-                <td class="action">
-                    <button type="submit" class="btn btn-primary btn-sm"
-                            ng-click="addTopic(activeTopic)"
-                            ng-disabled="!(topicSearch.length > 0 && matchingTopics.length) || !validateTopic(activeTopic)">
-                        Add
-                    </button>
-                </td>
-            </tr>
-            <tr>
-                <td colspan="2">
-                    <div class="suggestions">
-                        <div ng-show="topicSearch.length > 0">
-                            <label ng-repeat="topic in matchingTopics">
-                                <input type="radio" name="activeTopic" ng-model="$parent.activeTopic" ng-value="topic" />
+                    <td class="action">
+                        <button type="submit" class="btn btn-primary btn-sm"
+                                ng-click="addTopic(activeTopic)"
+                                ng-disabled="!(topicSearch.length > 0 && matchingTopics.length) || !validateTopic(activeTopic)">
+                            Add
+                        </button>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        <div class="suggestions">
+                            <div ng-show="topicSearch.length > 0">
+                                <label ng-repeat="topic in matchingTopics">
+                                    <input type="radio" name="activeTopic" ng-model="$parent.activeTopic"
+                                           ng-value="topic"/>
 
-                                {{ topic.code }} {{ topic.name }} <span class="subtle">{{ topic.location }} {{ topic.year }} {{ topic.semester }}</span>
-                                <span class="topic-subscript" ng-show="topic.subscript">{{ topic.subscript }}</span>
-                            </label>
-                            <p ng-show="!matchingTopics.length" class="hint hint-filter">Your search returned no results. Make sure you've selected the correct university and semester above :)</p>
+                                    {{ topic.code }} {{ topic.name }} <span class="subtle">{{ topic.location
+                                    }} {{ topic.year }} {{ topic.semester }}</span>
+                                    <span class="topic-subscript" ng-show="topic.subscript">{{ topic.subscript }}</span>
+                                </label>
+                                <p ng-show="!matchingTopics.length" class="hint hint-filter">Your search returned no
+                                    results. Make sure you've selected the correct university and semester above :)</p>
+                            </div>
+                            <div ng-show="topicSearch.length == 0" class="hint hint-filter">Type a few letters of a
+                                topic code or
+                                topic name to the left to search for topics, e.g. "software engineering"
+                            </div>
                         </div>
-                        <div ng-show="topicSearch.length == 0" class="hint hint-filter">Type a few letters of a topic code or
-                            topic name to the left to search for topics, e.g. "software engineering"</div>
-                    </div>
-                </td>
-            </tr>
-            </tfoot>
-        </table>
-    </form>
+                    </td>
+                </tr>
+                </tfoot>
+            </table>
+        </form>
     </div>
 </div>
 
@@ -116,12 +123,14 @@
     </div>
 
     <div ng-show="numPossibleTimetables <= 1">
-        <p>You only have <strong>{{ numPossibleTimetables | number }}</strong> possible timetables, so the generator won't be able to help you.</p>
+        <p>You only have <strong>{{ numPossibleTimetables | number }}</strong> possible timetables, so the generator
+            won't be able to help you.</p>
         <p>You can still export your class timetable to Google calendar below, though!</p>
     </div>
 
     <div ng-show="numPossibleTimetables > 1">
-        <p>You have <strong>{{ numPossibleTimetables | number }}</strong> possible timetables. To find your ideal timetable, we're going to need a
+        <p>You have <strong>{{ numPossibleTimetables | number }}</strong> possible timetables. To find your ideal
+            timetable, we're going to need a
             little more information</p>
 
         <p>Order the below list in terms of what's important to you, most important first.</p>
@@ -147,7 +156,8 @@
 
                         <span class="glyphicon glyphicon-arrow-down pull-right"
                               ng-click="movePreference($index, 1)"></span>
-                        <span class="glyphicon glyphicon-arrow-up pull-right" ng-click="movePreference($index, -1)"></span>
+                        <span class="glyphicon glyphicon-arrow-up pull-right"
+                              ng-click="movePreference($index, -1)"></span>
                     </li>
                 </ol>
             </div>
@@ -160,12 +170,14 @@
                         <li><label>Avoid Full Classes <input type="checkbox" ng-model="config.avoidFull"> </label></li>
                         <li><label>
                             Allow
-                            <select ng-model="config.clashAllowance" ng-options="a as a|secondsToHours for a in clashAllowanceChoices"></select>
+                            <select ng-model="config.clashAllowance"
+                                    ng-options="a as a|secondsToHours for a in clashAllowanceChoices"></select>
                             of avoidable clashes
                         </label></li>
                         <li><label>
                             Limit generator to comparing up to
-                            <select ng-model="config.maxTimetables" ng-options="v as k for (k, v) in maxTimetablesChoices"></select>
+                            <select ng-model="config.maxTimetables"
+                                    ng-options="v as k for (k, v) in maxTimetablesChoices"></select>
                             timetables <span class="subtle">(use a smaller number if UniBuddy freezes)</span>
                         </label></li>
                     </ul>
@@ -218,7 +230,8 @@
                         <timetable-mini topics="chosenTopics" candidate="candidate" class="mini"></timetable-mini>
                     </div>
                     <div class="col-sm-1 col-xs-2">
-                        <button class="btn btn-primary btn-sm" ng-click="applyClassGroupSelection(candidate.classPicks)">
+                        <button class="btn btn-primary btn-sm"
+                                ng-click="applyClassGroupSelection(candidate.classPicks)">
                             Apply
                         </button>
                     </div>
@@ -226,7 +239,8 @@
             </div>
 
             <p>Showing page {{pageIndex + 1}} of {{ numPages }}</p>
-            <button class="btn btn-primary btn-sm" ng-click="pageIndex = pageIndex - 1" ng-disabled="pageIndex <= 0">Show
+            <button class="btn btn-primary btn-sm" ng-click="pageIndex = pageIndex - 1" ng-disabled="pageIndex <= 0">
+                Show
                 previous suggestions
             </button>
             <button class="btn btn-primary btn-sm" ng-click="pageIndex = pageIndex + 1"
@@ -247,17 +261,22 @@
         <div class="row">
             <div ng-repeat="topic in chosenTopics" ng-show="topic.timetableLoaded"
                  class="col-md-3 topic" topic-highlight>
-                <h4>{{ topic.code }}</h4>
+                <h4>
+                    <b>{{ topic.code }}</b> - {{topic.semester}}<br>
+                    {{ topic.name }}
+                </h4>
 
                 <div ng-show="topic.classes" ng-repeat="class in topic.classes">
-                    <h5>{{ class.name }} ({{ (class.classGroups[0].activities[0].secondsDuration || 0) | secondsToHours }})</h5>
+                    <h5><b>{{ class.name }}</b>
+                        ({{ (class.classGroups[0].activities[0].secondsDuration || 0) | secondsToHours }})</h5>
 
                     <div ng-show="class.classGroups" class="list-group class-group">
                         <a ng-repeat="classGroup in class.classGroups" class="list-group-item activity"
                            ng-class="{ active: (classGroup == class.activeClassGroup), full: classGroup.full }"
                            ng-click="selectClassGroup(topic, class, classGroup)">
 
-                            <span class="stream-name pull-right" ng-show="classGroup.stream" title="Stream {{ classGroup.stream.name }}">
+                            <span class="stream-name pull-right" ng-show="classGroup.stream"
+                                  title="Stream {{ classGroup.stream.name }}">
                                 <span class="glyphicon glyphicon-pushpin"></span> {{ classGroup.stream.name }}
                             </span>
 
@@ -265,9 +284,28 @@
                                 <span class="glyphicon glyphicon-warning-sign"></span> Full
                             </span>
 
-                            <p class="list-group-item-text" ng-repeat="activity in sortSessions(removeDuplicateLookingBookings(classGroup.activities))">
-                                {{ activity.dayOfWeek }} {{ activity.timeStartsAt }} <span class="until"> &ndash; {{ activity.timeEndsAt }}</span>
-                            </p>
+                            <!--                            <p>-->
+                            <!--                                Group {{getSection(class, classGroup.groupId)}}-->
+                            <!--                            </p>-->
+
+
+                            <div class="list-group-item-text manual-entry" ng-repeat="activity in sortSessions(removeDuplicateLookingBookings(classGroup.activities))">
+                                {{ activity.dayOfWeek }}
+                                {{ activity.timeStartsAt }} <span class="until"> &ndash; {{ activity.timeEndsAt }}</span><br>
+                                {{ activity.room.name }} {{ activity.room.fullName }}
+
+
+                                <div ng-if="termDates" class="week-display-container">
+
+                                    <span ng-repeat="week in getWeeks(activity)" class="week-display label"
+                                          ng-class="week.active ? 'label-primary active' : 'label-default inactive'">
+                                        {{week.week}}
+                                    </span>
+                                </div>
+                            <!--                                <span ng-repeat="interval in activity.intervals">-->
+                            <!--                                    {{interval.firstDay}} - {{interval.lastDay}}<br>-->
+                            <!--                                </span><br>-->
+                            </div>
                         </a>
                     </div>
                 </div>
@@ -279,20 +317,25 @@
 
 <div class="container" ng-controller="CalendarController" ng-show="chosenTopics.length">
     <h3>Export to Google Calendar <small>(beta)</small></h3>
-    <p class="strong">Note that the following is for Flinders University students only. Adelaide University students should export to Google Calendar from their student dashboard</p>
+    <p class="strong">Note that the following is for Flinders University students only. Adelaide University students
+        should export to Google Calendar from their student dashboard</p>
     <p>Want to do any of the following?</p>
     <ul>
         <li>View your calendar on your phone</li>
         <li>Get notifications of your next class</li>
         <li>Share your university calendar with friends week on week</li>
     </ul>
-    <p>Well, you can! UniBuddy now lets you export your timetable to Google Calendar and access it wherever you are through <a href="http://calendar.google.com/">Google Calendar</a> or Google's Android Calendar app, or sync it to <a href="https://support.google.com/calendar/answer/99358?hl=en">Apple iCal</a>.</p>
-    <p class="hint">You should check that the created Google Calendar matches your university's provided timetable. We do not guarantee that your calendar will be exported correctly.</p>
+    <p>Well, you can! UniBuddy now lets you export your timetable to Google Calendar and access it wherever you are
+        through <a href="http://calendar.google.com/">Google Calendar</a> or Google's Android Calendar app, or sync it
+        to <a href="https://support.google.com/calendar/answer/99358?hl=en">Apple iCal</a>.</p>
+    <p class="hint">You should check that the created Google Calendar matches your university's provided timetable. We
+        do not guarantee that your calendar will be exported correctly.</p>
 
-    <hr />
+    <hr/>
 
     <div ng-show="!authorized">
-        <button class="btn btn-primary" ng-click="authorizeUser()" ng-disabled="authorized">Log in to Google Account</button>
+        <button class="btn btn-primary" ng-click="authorizeUser()" ng-disabled="authorized">Log in to Google Account
+        </button>
     </div>
 
     <div ng-show="authorized && calendarsEnabled">
@@ -306,21 +349,27 @@
             <tfoot>
             <tr>
                 <td>
-                    <input class="form-control" hint="Enter a new calendar name" ng-model="calendarName" />
+                    <input class="form-control" hint="Enter a new calendar name" ng-model="calendarName"/>
                 </td>
-                <td><button class="btn btn-primary btn-sm" ng-disabled="!calendarName.length" ng-click="createCalendar(calendarName)">Create Calendar</button></td>
+                <td>
+                    <button class="btn btn-primary btn-sm" ng-disabled="!calendarName.length"
+                            ng-click="createCalendar(calendarName)">Create Calendar
+                    </button>
+                </td>
             </tr>
             </tfoot>
             <tbody>
-            <tr ng-repeat="calendar in calendars" ng-class="{ active : calendar == activeCalendar && !exported,  success : calendar == activeCalendar && exported }">
+            <tr ng-repeat="calendar in calendars"
+                ng-class="{ active : calendar == activeCalendar && !exported,  success : calendar == activeCalendar && exported }">
                 <td>{{ calendar.summary }}</td>
-                <td><input type="radio" ng-model="$parent.activeCalendar" name="activeCalendar" ng-value="calendar" /></td>
+                <td><input type="radio" ng-model="$parent.activeCalendar" name="activeCalendar" ng-value="calendar"/>
+                </td>
             </tr>
 
             </tbody>
         </table>
 
-        <hr />
+        <hr/>
 
         <p ng-show="!activeCalendar">Select a calendar to export your timetable to.</p>
 
@@ -328,12 +377,14 @@
             <div class="progress-bar progress-bar-striped" role="progressbar"
                  ng-style="{ 'width' : percentage + '%' }"
                  ng-class="{ 'progress-bar-success' : (percentage >= 100) }">
-                 </div>
+            </div>
         </div>
 
 
         <div class="alert alert-success" ng-show="exported">Your calendar was successfully exported!</div>
-        <button class="btn btn-primary" ng-disabled="!activeCalendar || exporting" ng-show="!exported" ng-click="exportCalendar(activeCalendar)">Export Calendar</button>
+        <button class="btn btn-primary" ng-disabled="!activeCalendar || exporting" ng-show="!exported"
+                ng-click="exportCalendar(activeCalendar)">Export Calendar
+        </button>
     </div>
     <div ng-show="authorized && !calendarsEnabled">
         <div class="alert alert-danger">

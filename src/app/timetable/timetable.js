@@ -1,5 +1,6 @@
 angular.module('unibuddyTimetable.timetable', [
-        'ui.state',
+        // 'ui.state',
+        'ui.router',
         'ui.sortable',
         'flap.topics',
         'arrayMath',
@@ -264,7 +265,11 @@ angular.module('unibuddyTimetable.timetable', [
             booking.secondsStartsAt = activity.secondsStartsAt;
             booking.secondsEndsAt = activity.secondsEndsAt;
             booking.secondsDuration = activity.secondsDuration;
+            booking.room = activity.room;
             booking.locked = classType.classGroups.length == 1;
+
+            // Fuck
+            booking.intervals = activity.intervals;
 
             return booking;
         };
@@ -455,25 +460,32 @@ angular.module('unibuddyTimetable.timetable', [
         duplicateBookingsService.removeDuplicateLookingBookings = function removeDuplicateLookingBookings (bookings) {
             bookings = bookings.slice(0);
 
-            for (var i = 0; i < (bookings.length - 1); i++) {
-                var a = bookings[i];
-                var b = bookings[i + 1];
+            for (let i = 0; i < bookings.length; i++) {
+                let a = bookings[i];
+                for (let j = i + 1; j < bookings.length; j++) {
+                    let b = bookings[j];
 
-                var sessionComparisonFields = ['topicId', 'className', 'dayOfWeek', 'secondsStartsAt', 'secondsEndsAt'];
+                    const sessionComparisonFields = ['topicId', 'className', 'dayOfWeek', 'secondsStartsAt', 'secondsEndsAt'];
 
-                var found = true;
-                for (var j = 0; j < sessionComparisonFields.length; j++) {
-                    var field = sessionComparisonFields[j];
-                    if (a[field] !== b[field]) {
-                        found = false;
-                        break;
+                    let found = true;
+                    sessionComparisonFields.forEach(field => {
+                        if (a[field] !== b[field]) {
+                            found = false;
+                        }
+                    });
+
+                    // Remove the duplicate
+                    if (found) {
+                        // Update teaching intervals.
+                        b.intervals.forEach(interval => {
+                            if (a.intervals.find(int => int.firstDay === interval.firstDay && int.lastDay === interval.lastDay) === undefined)
+                                bookings[i].intervals.push(interval);
+                        })
+
+
+                        bookings.splice(j, 1);
+                        j--; // move the cursor back a space
                     }
-                }
-
-                // Remove the duplicate
-                if (found) {
-                    bookings.splice(i, 1);
-                    i--; // move the cursor back a space
                 }
             }
 
@@ -787,7 +799,7 @@ angular.module('unibuddyTimetable.timetable', [
         });
     })
 
-    .controller('ManualClassChooserController', function ($scope, chosenTopicService, duplicateBookingsService, sessionsService) {
+    .controller('ManualClassChooserController', function ($scope, chosenTopicService, duplicateBookingsService, sessionsService, termDatesFactory) {
         $scope.selectClassGroup = function(topic, classType, selectedGroup) {
             // If the selected group has a stream attached to it, we'll need to update every other class group with a stream
 
@@ -818,9 +830,74 @@ angular.module('unibuddyTimetable.timetable', [
             chosenTopicService.broadcastClassesUpdate();
         };
 
+        $scope.getSection = (classType, groupId) => {
+            let prefix = "";
+            switch (classType.name) {
+                case "Lecture": prefix = "LE"; break;
+                case "Practical": prefix = "PR"; break;
+                case "Workshop": prefix = "WR"; break;
+                case "Tutorial": prefix = "TU"; break;
+                case "Class Exercise": prefix = "CE"; break;
+            }
+
+            let num = (groupId < 10 ? "0" : "") + groupId;
+
+            return prefix + num;
+        };
+
+
+        $scope.getWeeks = (activity) => {
+            if (!$scope.termDates.length) {
+                return;
+            }
+
+            $scope.activeWeeks.forEach(week => week.active = false);
+
+            activity.intervals.forEach(interval => {
+                let firstDay = new Date(interval.firstDay);
+                let lastDay = new Date(interval.lastDay);
+
+                for (let i = 0; i < $scope.termDates.length; i++) {
+                    const date = $scope.termDates[i];
+
+                    const weekStart = new Date(date.startsAt);
+                    const weekEnd = new Date(date.endsAt);
+
+                    if (weekStart <= lastDay && firstDay <= weekEnd)
+                        $scope.activeWeeks[i].active = true;
+                }
+            });
+
+
+
+
+            return $scope.activeWeeks;
+        }
+
+
         $scope.chosenTopics = chosenTopicService.getTopics();
         $scope.removeDuplicateLookingBookings = duplicateBookingsService.removeDuplicateLookingBookings;
         $scope.sortSessions = sessionsService.sortSessions;
+
+        $scope.termDates = [];
+        $scope.activeWeeks = [];
+
+        $scope.$on('chosenTopicsUpdate', function () {
+            chosenTopics = chosenTopicService.getTopics();
+
+            console.log(chosenTopics);
+
+            termDatesFactory.getTermDatesAsync({instCode: chosenTopics[0].institution.code, year: chosenTopics[0].year}, termDates => {
+                $scope.termDates = termDates;
+
+                for (let i = 0; i < termDates.length; i++) {
+                    $scope.activeWeeks.push({
+                        week: i + 1,
+                        active: true, //weeks.includes(termDate.week)
+                    });
+                }
+            });
+        });
     })
 
     .directive('timetableMini', function (bookingFactory, displayableTimetableFactory, clashService, dayService, sessionsService, clashGroupFactory) {
@@ -941,8 +1018,8 @@ angular.module('unibuddyTimetable.timetable', [
                     scope.startOffset = 28800;
                 }
 
-                elem.css('height', (scope.booking.secondsDuration / (20 * 60)) + 'em');
-                elem.css('top', ((scope.booking.secondsStartsAt - scope.startOffset) / (20 * 60)) + 'em');
+                elem.css('height', (scope.booking.secondsDuration * 2 / (20 * 60)) + 'em');
+                elem.css('top', ((scope.booking.secondsStartsAt - scope.startOffset) * 2 / (20 * 60)) + 'em');
             }
         };
 
@@ -1122,7 +1199,5 @@ angular.module('unibuddyTimetable.timetable', [
 
         $scope.$on('chosenClassesUpdate', resetExporting);
         $scope.$watch('activeCalendar', resetExporting);
-    })
-
-;
+    });
 
