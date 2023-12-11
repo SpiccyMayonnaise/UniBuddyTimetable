@@ -885,14 +885,13 @@ angular.module('unibuddyTimetable.timetable', [
         $scope.$on('chosenTopicsUpdate', function () {
             chosenTopics = chosenTopicService.getTopics();
 
-            console.log(chosenTopics);
-
-            termDatesFactory.getTermDatesAsync({instCode: chosenTopics[0].institution.code, year: chosenTopics[0].year}, termDates => {
+            termDatesFactory.getTermDatesAsync({instCode: chosenTopics[0].institution.code, year: chosenTopics[0].year, semester: chosenTopics[0].semester}, termDates => {
                 $scope.termDates = termDates;
 
-                for (let i = 0; i < termDates.length; i++) {
+                for (let termDate of termDates) {
+                    console.log(termDate);
                     $scope.activeWeeks.push({
-                        week: i + 1,
+                        week: termDate.week,
                         active: true, //weeks.includes(termDate.week)
                     });
                 }
@@ -1104,9 +1103,9 @@ angular.module('unibuddyTimetable.timetable', [
         };
 
         $scope.generateTimetables = function () {
-            if (fbq) {
+            /*if (fbq) {
                 fbq('trackCustom', 'Generate', {});
-            }
+            }*/
 
             var timer = stopwatch();
 

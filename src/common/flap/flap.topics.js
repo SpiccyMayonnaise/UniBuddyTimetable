@@ -12,6 +12,7 @@ angular.module( 'flap.topics', [
 
             $http.get(url).then(function(response) {
                 institutions = camelCaseService.camelCaseObject(response.data.data);
+                console.log(institutions);
                 callback(institutions);
             });
         };
@@ -23,10 +24,11 @@ angular.module( 'flap.topics', [
         let termDatesFactory = {};
 
         termDatesFactory.getTermDatesAsync = function(query, callback) {
-            const url = apiPath + 'uni/' + query.instCode + '/dates/' + query.year + '.json';
+            const url = apiPath + 'uni/' + query.instCode + '/dates/' + query.year + '/' + query.semester + '.json';
 
             $http.get(url).then(response => {
                 termDates = camelCaseService.camelCaseObject(response.data.data);
+                console.log(termDates);
                 callback(termDates);
             });
         };
@@ -101,7 +103,7 @@ angular.module( 'flap.topics', [
                 });
 
                 topics.forEach(topic => {
-                    topic.classes.forEach(classType => {
+                    topic.classes && topic.classes.forEach(classType => {
                         classType.classGroups.forEach(classGroup => {
                             classGroup.activities.forEach(activity => {
                                 activity.intervals = [{firstDay: activity.firstDay, lastDay: activity.lastDay}];

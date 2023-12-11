@@ -1,14 +1,9 @@
 angular.module('colorAllocator', [])
     .constant('topicColors', [
-        '#84BF32',
-        '#FFA81B',
-        '#37BF32',
-        '#BF2F13',
-        '#007F15',
-        '#FF6548',
-        '#4E54FF',
-        '#4ACAFF',
-        '#45BFB8'
+        '#ff2400',
+        '#92e84c',
+        '#3471d5',
+        '#bd38ff',
     ])
     .factory('colorAllocator', function (topicColors) {
         var recentlyAssigned = [];
@@ -25,7 +20,7 @@ angular.module('colorAllocator', [])
             if (recentlyAssigned.length == topicColors.length) {
                 colorId = recentlyAssigned.shift();
             }
-            else if (recentlyAssigned.indexOf(colorId) !== -1) {
+            else while (recentlyAssigned.indexOf(colorId) !== -1) {
                 colorId = Math.floor(Math.random() * topicColors.length);
             }
 
